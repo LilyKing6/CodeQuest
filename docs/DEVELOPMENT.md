@@ -146,6 +146,18 @@ cs-quest/
 - 未登录提交返回 401；`performance` 钳制在 0~100
 - 剩余弱点（路线图）：无提交频率限制、无答案防爬
 
+### 6.5 学习激励（等级 / streak / 每日挑战）
+
+三个机制都是「纯函数定规则、服务端执行、页面只展示」：
+
+| 机制 | 规则（纯函数） | 存储 | 展示 |
+|---|---|---|---|
+| XP 等级 | `lib/level-curve.ts`：Lv L→L+1 需 100+(L-1)×50 XP，封顶 Lv.50 | `user_stats.totalXp` 推导，不另存 | 个人中心徽章+进度条 |
+| 连续学习 | `lib/streak.ts`：今天已记录不变、昨天有记录 +1、否则重置 1（UTC 日期） | `user_stats.streak_days` + `last_played_date` | 个人中心 🔥 / 地图页汇总 |
+| 每日挑战 | `lib/daily.ts`：FNV-1a(日期) 从全部关卡确定性挑一关，全站同题 | `user_stats.daily_done_date`（当日首完成标记） | /learn 顶部每日挑战卡 |
+
+每日挑战奖励：**当日首次完成（含重玩已通关卡）+40 XP**，在 POST /api/progress 内发放——比"双倍 XP"更合理，因为重玩已通关卡本没有基础 XP 可翻倍。新增关卡无需维护每日池；但 `scripts/seed-demo.mjs` 的 LEVELS 列表需同步更新。
+
 ## 7. 内容创作指南
 
 ### 7.1 新增一个主题（新大陆）Checklist
@@ -258,9 +270,10 @@ GUI 测试证据在 `gui-test-screenshots/`（git 忽略）。GUI 测试经验�
 
 ## 12. 路线图
 
-- [ ] 更多主题：编程语言、数据库、Web 开发、信息安全
+- [x] 第二批主题：数据库与 SQL、Web 开发、信息安全（已完成）
+- [ ] 更多主题：编程语言、编译原理、云原生
 - [ ] OAuth 登录（better-auth socialProviders）
-- [ ] 每日挑战 + 连续学习 streak
+- [x] 每日挑战 + 连续学习 streak + XP 等级曲线（已完成）
 - [ ] 提交频率限制与题库防爬
 - [ ] 成就持久化计算（当前 profile 页实时推导）
 

@@ -7,8 +7,10 @@ import { db } from "@/lib/db/client";
 import { levelProgress, userStats } from "@/lib/db/schema";
 import { ALL_LEVELS, THEMES } from "@/content/registry";
 import { totalStarsPossible, type ProgressMap } from "@/lib/progress-rules";
+import { levelTitle as levelRankTitle, xpLevelInfo } from "@/lib/level-curve";
 import { Stars } from "@/components/ui/Stars";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
 
 export const metadata: Metadata = { title: "个人中心" };
@@ -51,6 +53,9 @@ export default async function ProfilePage() {
   ).slice(0, 5);
   const levelTitle = (id: string) => ALL_LEVELS.find((l) => l.id === id)?.title ?? id;
 
+  // 等级曲线
+  const level = xpLevelInfo(stats?.totalXp ?? 0);
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
       {/* 头部 */}
@@ -59,7 +64,12 @@ export default async function ProfilePage() {
           {session.user.name.slice(0, 1).toUpperCase()}
         </span>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-2xl font-black">{session.user.name}</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="truncate text-2xl font-black">{session.user.name}</h1>
+            <Badge tone="neon">
+              Lv.{level.level} · {levelRankTitle(level.level)}
+            </Badge>
+          </div>
           <p className="mt-0.5 truncate text-sm text-ink-faint">{session.user.email}</p>
         </div>
         {rank !== null && (
@@ -70,8 +80,21 @@ export default async function ProfilePage() {
         )}
       </div>
 
+      {/* XP 等级进度 */}
+      <section className="card mt-6 p-5">
+        <div className="flex items-baseline justify-between font-mono text-xs">
+          <span className="text-ink-dim">
+            Lv.{level.level} · {level.xpInLevel}/{level.xpNeeded} XP
+          </span>
+          <span className="text-ink-faint">
+            {level.maxed ? "已满级，传奇！" : `距 Lv.${level.level + 1} 还差 ${level.xpToNext} XP`}
+          </span>
+        </div>
+        <ProgressBar value={level.xpInLevel} max={level.xpNeeded} className="mt-3 h-2.5" />
+      </section>
+
       {/* 数据卡 */}
-      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label="总 XP" value={stats?.totalXp ?? 0} mono />
         <StatCard label="已通关" value={`${cleared.length} / ${ALL_LEVELS.length}`} />
         <StatCard
@@ -83,7 +106,14 @@ export default async function ProfilePage() {
             </span>
           }
         />
-        <StatCard label="注册天数" value={daysSince(session.user.createdAt ?? new Date())} />
+        <StatCard
+          label="连续学习"
+          value={
+            <span className={(stats?.streakDays ?? 0) > 0 ? "" : "opacity-60"}>
+              🔥 {stats?.streakDays ?? 0} 天
+            </span>
+          }
+        />
       </div>
 
       {/* 总进度 */}
@@ -180,10 +210,6 @@ function StatCard({
       <p className="mt-1 text-xs text-ink-faint">{label}</p>
     </div>
   );
-}
-
-function daysSince(d: Date): number {
-  return Math.max(1, Math.floor((Date.now() - d.getTime()) / 86400000));
 }
 
 interface Achievement {

@@ -7,6 +7,8 @@ import { levelProgress, userStats } from "@/lib/db/schema";
 import { findLevelWithContext } from "@/content/registry";
 import { isLevelUnlocked, type ProgressMap } from "@/lib/progress-rules";
 import { scoreLevel } from "@/lib/scoring";
+import { DAILY_BONUS_XP, isTodayDaily } from "@/lib/daily";
+import { nextStreak, utcDateStr } from "@/lib/streak";
 
 export async function GET() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -110,7 +112,23 @@ export async function POST(req: Request) {
   }
 
   // 更新聚合统计（XP 只按增量累加，重复通关不重复拿 XP）
-  const gainedXp = isNewClear ? result.xp : 0;
+  const today = utcDateStr();
+  const statsRow = (
+    await db.select().from(userStats).where(eq(userStats.userId, userId))
+  )[0];
+
+  // 每日挑战：当日首次完成额外 +40 XP（重玩已通关的每日关卡也能拿，鼓励回炉）
+  const isDaily = isTodayDaily(levelId, today);
+  const dailyBonus = isDaily && statsRow?.dailyDoneDate !== today ? DAILY_BONUS_XP : 0;
+
+  // streak：今天已记录不变、昨天有记录 +1、否则重置为 1
+  const streak = nextStreak(
+    statsRow?.streakDays ?? 0,
+    statsRow?.lastPlayedDate ?? null,
+    today,
+  );
+
+  const gainedXp = (isNewClear ? result.xp : 0) + dailyBonus;
   const gainedStars = Math.max(0, starDelta);
 
   await db
@@ -121,6 +139,9 @@ export async function POST(req: Request) {
       levelsCleared: isNewClear ? 1 : 0,
       totalStars: gainedStars,
       achievements: [],
+      streakDays: streak,
+      lastPlayedDate: today,
+      dailyDoneDate: isDaily ? today : null,
     })
     .onConflictDoUpdate({
       target: userStats.userId,
@@ -128,6 +149,9 @@ export async function POST(req: Request) {
         totalXp: sql`${userStats.totalXp} + ${gainedXp}`,
         levelsCleared: sql`${userStats.levelsCleared} + ${isNewClear ? 1 : 0}`,
         totalStars: sql`${userStats.totalStars} + ${gainedStars}`,
+        streakDays: streak,
+        lastPlayedDate: today,
+        dailyDoneDate: isDaily ? today : sql`${userStats.dailyDoneDate}`,
         updatedAt: sql`unixepoch()`,
       },
     });
@@ -136,6 +160,7 @@ export async function POST(req: Request) {
     passed: true,
     stars: Math.max(prev?.stars ?? 0, result.stars),
     xpGained: gainedXp,
+    dailyBonus,
     newRecord: result.stars > (prev?.stars ?? 0),
   });
 }

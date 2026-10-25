@@ -104,6 +104,12 @@ export const userStats = sqliteTable("user_stats", {
     .$type<string[]>()
     .notNull()
     .default([]),
+  /** 连续学习天数（按 UTC 日期推进） */
+  streakDays: integer("streak_days").notNull().default(0),
+  /** 最近一次通关的 UTC 日期（YYYY-MM-DD），streak 推进依据 */
+  lastPlayedDate: text("last_played_date"),
+  /** 最近一次完成「每日挑战」的 UTC 日期 */
+  dailyDoneDate: text("daily_done_date"),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
