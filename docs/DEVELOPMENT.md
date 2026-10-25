@@ -139,12 +139,21 @@ cs-quest/
 
 > ⚠️ 新代码不要在 `await submitProgress()` 之前不渲染任何东西——实测网络挂起会让结算 UI 永久卡住。相关缺陷修复见 git 历史 "结算乐观 UI"。
 
-### 6.4 防作弊
+### 6.4 防作弊与限流
 
 - 星/XP 只能由服务端算：客户端提交的是 `answers[]` 或 `performance` 原始数据
 - 提交时校验关卡解锁状态（跳关提交返回 403）
 - 未登录提交返回 401；`performance` 钳制在 0~100
-- 剩余弱点（路线图）：无提交频率限制、无答案防爬
+- **成绩上报限流**：`lib/rate-limit.ts` 滑动窗口（每用户 12 次/分钟，429 + Retry-After）。单进程内存实现，多实例部署时换 Redis、判定函数不变
+- **认证限流**：better-auth 内置（60 秒窗口 20 次），防登录/注册爆破
+- 剩余弱点（路线图）：无答案防爬、无验证码
+
+### 6.5 运维探针与 CI
+
+- `GET /api/health`：DB 连通性 + uptime，Docker healthcheck 与监控探针都指向它
+- CI：`.github/workflows/ci.yml`——push/PR 自动跑 `pnpm install --frozen-lockfile`、`pnpm test`、`pnpm build`（pnpm 版本由 package.json 的 `packageManager` 字段固定）
+- SEO：`app/sitemap.ts` 生成全站站点地图（含全部关卡页）；根布局含 OpenGraph/Twitter 元数据，`metadataBase` 取自 `BETTER_AUTH_URL`
+- 移动端：全部页面 390px 视口通过横向溢出检测（检测方式：`document.scrollWidth` 对比 + 逐元素定位越界者）
 
 ### 6.5 学习激励（等级 / streak / 每日挑战）
 
@@ -274,8 +283,10 @@ GUI 测试证据在 `gui-test-screenshots/`（git 忽略）。GUI 测试经验�
 - [ ] 更多主题：编程语言、编译原理、云原生
 - [ ] OAuth 登录（better-auth socialProviders）
 - [x] 每日挑战 + 连续学习 streak + XP 等级曲线（已完成）
-- [ ] 提交频率限制与题库防爬
+- [x] 提交频率限制（成绩上报 12 次/分 + 认证限流）
+- [ ] 题库防爬
 - [ ] 成就持久化计算（当前 profile 页实时推导）
+- [x] CI 与健康检查（GitHub Actions + /api/health）
 
 ## 13. 故障排查 FAQ
 

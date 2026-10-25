@@ -9,6 +9,7 @@ import { isLevelUnlocked, type ProgressMap } from "@/lib/progress-rules";
 import { scoreLevel } from "@/lib/scoring";
 import { DAILY_BONUS_XP, isTodayDaily } from "@/lib/daily";
 import { nextStreak, utcDateStr } from "@/lib/streak";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -42,6 +43,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const userId = session.user.id;
+
+  // 限流：每用户每分钟最多 12 次成绩上报（防脚本刷分）
+  const rate = checkRateLimit(`progress:${userId}`);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "too many requests", retryAfterMs: rate.retryAfterMs },
+      { status: 429, headers: { "retry-after": String(Math.ceil(rate.retryAfterMs / 1000)) } },
+    );
+  }
 
   let body: {
     levelId?: string;
