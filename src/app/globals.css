@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+@theme {
+  /* 背景层次（深→浅） */
+  --color-bg: #0a0a0f;
+  --color-surface: #12121c;
+  --color-surface-2: #1a1a28;
+  --color-surface-3: #23233a;
+  --color-line: #2a2a40;
+  --color-line-active: #43436a;
+
+  /* 文字 */
+  --color-ink: #e8e8f2;
+  --color-ink-dim: #9a9ab5;
+  --color-ink-faint: #62627d;
+
+  /* 品牌霓虹 */
+  --color-neon: #8b5cf6;
+  --color-neon-strong: #a78bfa;
+  --color-neon-soft: #c4b5fd;
+  --color-cyan: #22d3ee;
+  --color-cyan-strong: #67e8f9;
+
+  /* 状态色 */
+  --color-ok: #34d399;
+  --color-ok-deep: #059669;
+  --color-warn: #fbbf24;
+  --color-bad: #fb7185;
+
+  /* 金币 / XP */
+  --color-xp: #f59e0b;
+
+  /* 字体：中文走系统栈，不下载 webfont */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "PingFang SC",
+    "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "JetBrains Mono", Consolas,
+    "Courier New", monospace;
+
+  /* 动画 */
+  --animate-pop: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-shake: shake 0.4s ease-in-out both;
+  --animate-glow-pulse: glow-pulse 2.4s ease-in-out infinite;
+  --animate-float: float 5s ease-in-out infinite;
+  --animate-rise: rise 0.5s ease-out both;
+  --animate-blink: blink 1.1s steps(2, start) infinite;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(7px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 18px 0 rgb(139 92 246 / 0.35);
+  }
+  50% {
+    box-shadow: 0 0 30px 6px rgb(139 92 246 / 0.55);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes rise {
+  0% {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
+  }
+}
+
+/* ---------- 基础 ---------- */
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-bg text-ink font-sans antialiased;
+  background-image:
+    radial-gradient(ellipse 55% 40% at 12% -8%, rgb(139 92 246 / 0.13), transparent),
+    radial-gradient(ellipse 45% 35% at 88% 0%, rgb(34 211 238 / 0.09), transparent);
+  background-attachment: fixed;
+  min-height: 100dvh;
+}
+
+::selection {
+  background: rgb(139 92 246 / 0.45);
+}
+
+/* 细滚动条 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-active) transparent;
+}
+
+/* ---------- 组件类 ---------- */
+
+@layer components {
+  /* 霓虹渐变主按钮 */
+  .btn-neon {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5
+      font-semibold text-white transition-all duration-200 select-none
+      cursor-pointer disabled:opacity-40 disabled:pointer-events-none;
+    background-image: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 45%, #0ea5e9 120%);
+    box-shadow: 0 0 16px rgb(139 92 246 / 0.35);
+  }
+  .btn-neon:hover:not(:disabled) {
+    box-shadow: 0 0 26px rgb(139 92 246 / 0.6);
+    transform: translateY(-1px);
+  }
+  .btn-neon:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  /* 次级按钮 */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5
+      font-medium text-ink-dim border border-line transition-all duration-200
+      cursor-pointer select-none hover:text-ink hover:border-line-active
+      hover:bg-surface-2 disabled:opacity-40 disabled:pointer-events-none;
+  }
+
+  /* 面板卡片 */
+  .card {
+    @apply rounded-2xl border border-line bg-surface/80 backdrop-blur-sm;
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 hover:border-line-active hover:bg-surface-2/80
+      hover:-translate-y-0.5;
+  }
+
+  /* 输入框 */
+  .input {
+    @apply w-full rounded-xl border border-line bg-surface-2 px-4 py-2.5 text-ink
+      placeholder:text-ink-faint outline-none transition-colors duration-150
+      focus:border-neon focus:ring-2 focus:ring-neon/30;
+  }
+
+  /* 等宽代码块 */
+  .code {
+    @apply font-mono text-cyan-strong;
+  }
+
+  /* 网格背景（英雄区用） */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgb(139 92 246 / 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(139 92 246 / 0.07) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 30%, transparent 75%);
+  }
+}

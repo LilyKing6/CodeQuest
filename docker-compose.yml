@@ -1,0 +1,23 @@
+services:
+  cs-quest:
+    build: .
+    container_name: cs-quest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000" # 只绑本机，公网经 nginx 反代；如需直连改为 "3000:3000"
+    environment:
+      DATABASE_URL: file:/data/cs-quest.db
+      # 务必修改：openssl rand -base64 32
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?请在 .env 中设置 BETTER_AUTH_SECRET}
+      # 对外访问地址（含协议，结尾无斜杠）
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+    volumes:
+      - cs-quest-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/login"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  cs-quest-data:
