@@ -2,8 +2,11 @@ import type { Level, QuizLevel, Theme } from "./types";
 import { algorithmsTheme } from "./themes/algorithms";
 import { binaryTheme } from "./themes/binary";
 import { cpuTheme } from "./themes/cpu";
+import { databaseTheme } from "./themes/database";
 import { networkTheme } from "./themes/network";
 import { osTheme } from "./themes/os";
+import { securityTheme } from "./themes/security";
+import { webdevTheme } from "./themes/webdev";
 
 /**
  * 主题注册表：新增主题时在 themes/ 下建文件，然后加进这个数组即可。
@@ -15,6 +18,9 @@ export const THEMES: Theme[] = [
   osTheme,
   networkTheme,
   algorithmsTheme,
+  databaseTheme,
+  webdevTheme,
+  securityTheme,
 ];
 
 export const ALL_LEVELS: Level[] = THEMES.flatMap((t) => t.levels);

@@ -22,6 +22,10 @@ const MINI_GAMES = {
   subnetting: dynamic(() => import("@/components/games/Subnetting")),
   "binary-search": dynamic(() => import("@/components/games/BinarySearch")),
   "bubble-sort": dynamic(() => import("@/components/games/BubbleSort")),
+  matching: dynamic(() => import("@/components/games/Matching")),
+  "sql-builder": dynamic(() => import("@/components/games/SqlBuilder")),
+  "css-box": dynamic(() => import("@/components/games/CssBox")),
+  "password-lab": dynamic(() => import("@/components/games/PasswordLab")),
 } as const;
 
 export function LevelClient({

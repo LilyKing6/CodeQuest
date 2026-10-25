@@ -1,6 +1,6 @@
 # CodeQuest · 游戏化学计算机
 
-通过闯关游戏学习计算机基础知识：答题 + 互动小游戏混合模式，涵盖**二进制与逻辑门、CPU 与内存、操作系统、计算机网络、算法入门**五大主题，26 个关卡（含 8 个原创互动小游戏）。
+通过闯关游戏学习计算机基础知识：答题 + 互动小游戏混合模式，涵盖**二进制与逻辑门、CPU 与内存、操作系统、计算机网络、算法入门、数据库与 SQL、Web 开发、信息安全**八大主题，44 个关卡（含 14 个互动小游戏实例）。
 
 ![技术栈](https://img.shields.io/badge/Next.js_16-React_19-Tailwind_v4-8b5cf6) ![DB](https://img.shields.io/badge/SQLite-Drizzle_ORM-22d3ee) ![Auth](https://img.shields.io/badge/better--auth-邮箱注册-34d399)
 
@@ -88,13 +88,13 @@ src/
 ├── app/                  # 路由（(main) 带页头页脚；(auth) 登录注册；play/ 全屏关卡）
 ├── components/
 │   ├── game/             # QuizEngine（答题引擎）、ResultScreen（结算）、关卡页
-│   ├── games/            # ★ 8 个互动小游戏（每游戏一个文件）
+│   ├── games/            # ★ 12 个互动小游戏组件（每游戏一个文件）
 │   ├── ui/               # Button / Stars / ProgressBar / Badge
 │   └── layout/           # 页头页脚
 ├── content/              # ★ 内容即数据（扩展主要动这里）
 │   ├── types.ts          # 主题/关卡/题库/小游戏配置的全部类型
 │   ├── registry.ts       # 主题注册表（THEMES 数组，顺序即解锁顺序）
-│   └── themes/*.ts       # 各主题题库
+│   └── themes/           # 8 个主题题库文件
 └── lib/
     ├── db/               # Drizzle schema + 客户端（SQLite）
     ├── auth.ts           # better-auth 配置
@@ -133,7 +133,7 @@ src/
 
 ## 后续路线
 
-- [ ] 更多主题：编程语言、数据库、Web 开发、信息安全……（`content/themes/` 加文件即可）
+- [ ] 更多主题：编程语言、编译原理、云原生……（`content/themes/` 加文件即可）
 - [ ] OAuth 登录（better-auth 的 socialProviders 开箱即用）
 - [ ] 每日挑战与连续学习 streak
 - [ ] PostgreSQL 迁移（改 drizzle schema 的 dialect + DATABASE_URL）

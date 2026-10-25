@@ -69,6 +69,10 @@ describe("content integrity", () => {
       "subnetting",
       "binary-search",
       "bubble-sort",
+      "matching",
+      "sql-builder",
+      "css-box",
+      "password-lab",
     ]);
     for (const level of ALL_LEVELS) {
       if (level.type === "minigame") {

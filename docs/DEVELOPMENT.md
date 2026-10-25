@@ -73,14 +73,14 @@ cs-quest/
 │   │   └── layout.tsx         # 根布局 + metadata
 │   ├── components/
 │   │   ├── game/              # 通用引擎：QuizEngine、ResultScreen、CodeInline
-│   │   ├── games/             # ★ 8 个小游戏（每游戏一文件 + shared.ts 收尾）
+│   │   ├── games/             # ★ 12 个小游戏组件（每游戏一文件 + shared.ts 收尾）
 │   │   ├── ui/                # Button / Stars / ProgressBar / Badge
 │   │   ├── layout/            # SiteHeader / SiteFooter
 │   │   └── auth/              # AuthForm
 │   ├── content/               # ★ 内容层（扩展主要动这里）
 │   │   ├── types.ts           # 全部类型：Theme/Level/Question/MiniGameConfigs
 │   │   ├── registry.ts        # THEMES 数组 + findLevel/nextLevelOf
-│   │   └── themes/            # binary / cpu / os / network / algorithms
+│   │   └── themes/            # binary / cpu / os / network / algorithms / database / webdev / security
 │   └── lib/
 │       ├── db/schema.ts       # Drizzle 表定义
 │       ├── db/client.ts       # libsql 客户端（自动建目录）
@@ -175,7 +175,7 @@ cs-quest/
 3. `src/app/play/[levelId]/LevelClient.tsx` 的 `MINI_GAMES` 注册表加一行 `dynamic(() => import(...))`（自动代码分割）
 4. 在主题文件里引用 `{ type: "minigame", game: "my-game", config: {...} }`
 
-**玩法设计经验**（来自已上线 8 个游戏）：
+**玩法设计经验**（来自已上线 12 个游戏）：
 - 核心计算抽成纯函数放组件旁（如 `scheduler-logic.ts`、`sort-logic.ts`），可单测
 - 失败/失误规则要容忍"中间态"——玩家调整过程中途不应被惩罚（见 BinaryBulbs 的修正历史）
 - 用 aria-label 暴露权重/含义，既是可访问性也是自动化测试的定位锚点

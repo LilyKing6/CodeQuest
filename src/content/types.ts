@@ -52,6 +52,11 @@ export interface MiniGameConfigs {
   "subnetting": SubnettingConfig;
   "binary-search": BinarySearchConfig;
   "bubble-sort": BubbleSortConfig;
+  /** 通用左右配对（多主题复用） */
+  "matching": MatchingConfig;
+  "sql-builder": SqlBuilderConfig;
+  "css-box": CssBoxConfig;
+  "password-lab": PasswordLabConfig;
 }
 
 export type MiniGameId = keyof MiniGameConfigs;
@@ -129,4 +134,50 @@ export interface BubbleSortConfig {
   numbers: number[];
   /** 最少交换次数上限（用于评星） */
   parSwaps: number;
+}
+
+/** 通用左右配对：点选左侧一项与右侧一项完成配对 */
+export interface MatchingConfig {
+  /** 正确配对（5~6 对） */
+  pairs: { left: string; right: string }[];
+  /** 主题色点缀（可选，缺省用品牌紫） */
+  accent?: string;
+}
+
+/** SQL 查询拼装：按语义目标把乱序片段拼成正确语句 */
+export interface SqlBuilderConfig {
+  puzzles: {
+    /** 用自然语言描述的查询目标 */
+    goal: string;
+    /** 打乱展示的子句片段 */
+    fragments: string[];
+    /** 正确顺序（fragments 的下标序列） */
+    answer: number[];
+    /** 装配完成后对应的完整 SQL（解析展示用） */
+    finalSql: string;
+  }[];
+}
+
+/** CSS 盒模型挑战：调整 padding/border 使元素总宽命中目标 */
+export interface CssBoxConfig {
+  /** 固定内容宽度 */
+  contentWidth: number;
+  /** 目标总宽列表（逐关） */
+  targets: { total: number; hint: string }[];
+}
+
+/** 密码强度实验室：达成全部条件即通关 */
+export interface PasswordLabConfig {
+  /** 各关目标条件（全部满足则该关通过） */
+  challenges: {
+    name: string;
+    /** 最小长度 */
+    minLength?: number;
+    /** 最小熵（bit） */
+    minEntropy?: number;
+    /** 必须包含的字符类别：lower/upper/digit/symbol */
+    requireClasses?: string[];
+    /** 估算破解时间下限（如 "100 years"，由熵换算） */
+    minCrackYears?: number;
+  }[];
 }

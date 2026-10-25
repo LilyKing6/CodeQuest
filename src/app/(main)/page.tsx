@@ -3,6 +3,12 @@ import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
 import { THEMES } from "@/content/registry";
 
+const TOTAL_LEVELS = THEMES.reduce((n, t) => n + t.levels.length, 0);
+const TOTAL_MINIGAMES = THEMES.reduce(
+  (n, t) => n + t.levels.filter((l) => l.type === "minigame").length,
+  0,
+);
+
 export default function HomePage() {
   return (
     <div>
@@ -20,7 +26,7 @@ export default function HomePage() {
             </span>
           </h1>
           <p className="animate-rise mt-5 max-w-2xl text-balance text-base leading-relaxed text-ink-dim sm:text-lg">
-            从二进制到算法，26 个关卡将计算机基础知识拆成一场冒险。
+            从二进制到信息安全，{TOTAL_LEVELS} 个关卡将计算机基础知识拆成一场冒险。
             答题闯关点亮星星，动手玩转 CPU、网络与排序的互动模拟，
             每一颗星都是真实掌握的知识点。
           </p>
@@ -35,9 +41,9 @@ export default function HomePage() {
 
           <dl className="animate-rise mt-14 grid w-full max-w-2xl grid-cols-3 gap-3 text-center">
             {[
-              ["5", "知识大陆"],
-              ["26", "闯关关卡"],
-              ["6", "互动小游戏"],
+              [String(THEMES.length), "知识大陆"],
+              [String(TOTAL_LEVELS), "闯关关卡"],
+              [String(TOTAL_MINIGAMES), "互动小游戏"],
             ].map(([num, label]) => (
               <div key={label} className="card px-4 py-5">
                 <dt className="font-mono text-2xl font-black text-neon-strong sm:text-3xl">
@@ -56,7 +62,7 @@ export default function HomePage() {
           <div>
             <h2 className="text-2xl font-bold">知识大陆</h2>
             <p className="mt-1 text-sm text-ink-dim">
-              五大主题层层递进，解锁一片大陆，点亮一颗技能树
+              {THEMES.length} 大片主题大陆层层递进，解锁一片大陆，点亮一颗技能树
             </p>
           </div>
           <Link
@@ -87,7 +93,7 @@ export default function HomePage() {
                   {theme.icon}
                 </span>
                 <span className="font-mono text-xs text-ink-faint">
-                  0{i + 1} / 05
+                  {String(i + 1).padStart(2, "0")} / {String(THEMES.length).padStart(2, "0")}
                 </span>
               </div>
               <h3 className="mt-4 text-lg font-bold">{theme.title}</h3>
